@@ -26,6 +26,7 @@ class WordDictionary:
         return False
 
 # Letter point value system
+# The spaces represent the blanks
 POINTS = {"A": 1, "C": 3, "B": 3, "E": 1, "D": 2, "G": 2, 
           "F": 4, "I": 1, "H": 4, "K": 5, "J": 8, "M": 3, 
           "L": 1, "O": 1, "N": 1, "Q": 10, "P": 3, "S": 1, 
