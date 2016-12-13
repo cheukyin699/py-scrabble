@@ -7,11 +7,18 @@ class ResourceManager:
     Must be initialized and linked at the start of the program.
     '''
     def __init__(self):
-        initTiles(None)
+        initTiles("res/tile_resources.png")
 
-    def initTiles(self, fn):
+    def init_tiles(self, fn):
         '''
         Initializes self.tiles dictionary for fast lookup of
         tile sprite.
         '''
-        pass
+        # Load tiles
+        self.tilesMap = pygame.image.load(fn)
+
+        # Initialize tiles by creating them on the fly
+        self.tiles = {}
+        for letter in range(ord('A'), ord('Z') + 1):
+            t = self.tilesMap.subsurface([0, 0, 50, 50])
+            self.tiles[chr(letter)] = t
