@@ -6,4 +6,4 @@ $ python scrabble.py
 from game import *
 
 game = ScrabbleGame()
-game.play(True)
+game.play(False)

@@ -1,4 +1,10 @@
 import pygame
+import colors
+import word_helpers as wh
+
+Scrabble_Number_Font = "Futura9"
+Scrabble_Font = "Futura40"
+Tile_Size = (50, 50)
 
 class ResourceManager:
     '''
@@ -9,7 +15,9 @@ class ResourceManager:
     def __init__(self):
         self.fonts = {}
 
-        initTiles("res/tile_resources.png")
+        self.init_tiles("res/imgs/tile_resources.png")
+
+        self.finishedLoading = True
 
     def init_tiles(self, fn):
         '''
@@ -20,12 +28,37 @@ class ResourceManager:
         self.tilesMap = pygame.image.load(fn)
 
         # Load fonts (for font writing)
-        init_fonts()
+        self.init_fonts()
 
         # Initialize tiles by creating them on the fly
         self.tiles = {}
         for letter in range(ord('A'), ord('Z') + 1):
-            t = self.tilesMap.subsurface([0, 0, 50, 50])
+            # First tile, 50x50
+            t = self.tilesMap.subsurface(
+                    [0, 0,
+                     Tile_Size[0], Tile_Size[0]]).copy()
+
+            # Render letter
+            letter_s = self.fonts[Scrabble_Font].render(
+                                chr(letter),
+                                True,
+                                colors.BLACK)
+            # Position letter in the middle of the tile
+            letter_sx = (Tile_Size[0] - letter_s.get_width())  / 2
+            letter_sy = (Tile_Size[1] - letter_s.get_height()) / 2
+
+            # Render score on the letter
+            num_s = self.fonts[Scrabble_Number_Font].render(
+                                str(wh.POINTS[chr(letter)]),
+                                False,
+                                colors.BLACK)
+            # Position score on the bottom right of the tile
+            # Adds 2px of padding on each side
+            num_sx = Tile_Size[0] - num_s.get_width()  - 2
+            num_sy = Tile_Size[1] - num_s.get_height() - 2
+
+            t.blit(letter_s, (letter_sx, letter_sy))
+            t.blit(num_s, (num_sx, num_sy))
             self.tiles[chr(letter)] = t
 
     def init_fonts(self):
@@ -35,10 +68,11 @@ class ResourceManager:
         # Lookup table for easy adding/removing
         font_fns = [
             # Used for scrabble tiles
-            ('Futura',      'FuturaExtended.ttf'),
+            ('Futura',      'FuturaExtended.ttf',       [9, 40]),
             # Used for everything else
-            ('OpenSans',    'OpenSans-Regular.ttf')
+            ('OpenSans',    'OpenSans-Regular.ttf',     [50])
         ]
 
-        for key, fn in font_fns:
-            self.fonts[key] = pygame.font.Font('./res/fonts/' + fn)
+        for key, fn, sizes in font_fns:
+            for size in sizes:
+                self.fonts[key + str(size)] = pygame.font.Font('./res/fonts/' + fn, size)
