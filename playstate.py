@@ -23,7 +23,7 @@ class PlayState(state.State):
         Draws the state onto the screen scrn.
         '''
         if self.ai:
-            # Not implemented, so displays RED
+            # Not implemented, so displays NOTHING
             pass
         elif self.rman.finishedLoading:
             '''
