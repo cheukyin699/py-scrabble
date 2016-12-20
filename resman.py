@@ -102,6 +102,11 @@ class ResourceManager:
             t.blit(num_s, (num_sx, num_sy))
             self.tiles[chr(letter)] = t
 
+        # Adds the blank tile (represented by question mark `?')
+        t = self.tilesMap.subsurface(
+                [0, 0, Tile_Size[0], Tile_Size[1]).copy()
+        self.tiles['?'] = t
+
     def init_fonts(self):
         '''
         Loads all the fonts into memory.
