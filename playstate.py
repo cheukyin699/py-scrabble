@@ -1,5 +1,6 @@
 import state
 import resman
+import board
 
 class PlayState(state.State):
     '''
@@ -8,9 +9,10 @@ class PlayState(state.State):
 
     Loads everything necessary and starts the game.
     '''
-    def __init__(self, ai = False):
+    def __init__(self, rman, ai = False):
         self.ai = ai
-        self.rman = resman.ResourceManager()
+        self.rman = rman
+        self.board = board.ScrabbleBoard((0, 0), self.rman)
 
     def handle(self, evt):
         '''
@@ -22,21 +24,7 @@ class PlayState(state.State):
         '''
         Draws the state onto the screen scrn.
         '''
-        if self.ai:
-            # Not implemented, so displays NOTHING
-            pass
-        elif self.rman.finishedLoading:
-            '''
-            Remove later - this is code for testing the tile surfaces
-            '''
-            scrn_w = scrn.get_width()
-            x, y = 0, 0
-            for key, tile in self.rman.tiles.items():
-                if x + tile.get_width() > scrn_w:
-                    x = 0
-                    y += tile.get_height()
-                scrn.blit(tile, (x, y))
-                x += tile.get_width()
+        self.board.draw(scrn)
 
     def update(self, delta):
         '''

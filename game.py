@@ -1,9 +1,12 @@
 import pygame
 import playstate as ps
+import resman
 
 class ScrabbleGame:
     def __init__(self):
-        pass
+        pygame.init()
+
+        self.rman = resman.ResourceManager()
 
     def play(self, ai):
         '''
@@ -15,16 +18,16 @@ class ScrabbleGame:
         Modularization is fun. And you get to read more of these
         epic comments, right?
         '''
-        pygame.init()
-
         # Constants
-        SIZE = (700, 700)
+        SIZE = (750, 750)
 
         # Variables
         screen = pygame.display.set_mode(SIZE)
         clock = pygame.time.Clock()
         running = True
-        currentState = ps.PlayState(ai)
+        currentState = ps.PlayState(self.rman, ai)
+
+        pygame.display.set_caption("Scrabble")
 
         # Main loop
         while running:

@@ -28,11 +28,11 @@ Format:
      (x, y, w, h))
 '''
 Board_Tiles = [
-    ('NA', False, ( 50,  0, 50, 50)),     # Normal tile
+    ('NM', False, ( 50,  0, 50, 50)),     # Normal tile
     ('MD', False, (100,  0, 50, 50)),     # That tile in the middle
     ('DL',  True, (150,  0, 50, 50)),     # Double letter
-    ('DW',  True, (200,  0, 50, 50)),     # Double word
-    ('TL',  True, (250,  0, 50, 50)),     # Triple letter
+    ('TL',  True, (200,  0, 50, 50)),     # Double word
+    ('DW',  True, (250,  0, 50, 50)),     # Triple letter
     ('TW',  True, (300,  0, 50, 50))      # Triple word
 ]
 
