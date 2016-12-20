@@ -13,3 +13,12 @@ class Tile:
         '''
         '''
         scrn.blit(rman.tiles[self.letter], pos)
+
+class Bonus:
+    def __init__(self, b):
+        self.b = b
+
+    def draw(self, scrn, pos, rman):
+        '''
+        '''
+        scrn.blit(rman.tiles[self.b], pos)

@@ -1,5 +1,6 @@
 import pygame
 import colors
+import tile
 
 class ScrabbleBoard:
     '''
@@ -22,7 +23,7 @@ class ScrabbleBoard:
         f = open(fn, 'r')
         for line in f.readlines():
             for sym in line.rstrip().split():
-                self.bonus[-1].append(self.rman.tiles[sym])
+                self.bonus[-1].append(tile.Bonus(sym))
             self.bonus.append([])
 
         f.close()
@@ -45,9 +46,11 @@ class ScrabbleBoard:
             zipped = list(zip(self.tiles[y], self.bonus[y]))
             for x in range(len(zipped)):
                 if zipped[x][0] is None:
-                    scrn.blit(zipped[x][1], (x * 50, y * 50))
+                    # Draw the bonus if necessary
+                    zipped[x][1].draw(scrn, (x * 50, y * 50), self.rman)
                 else:
-                    scrn.blit(zipped[x][0], (x * 50, y * 50))
+                    # Draw the tile otherwise
+                    zipped[x][0].draw(scrn, (x * 50, y * 50), self.rman)
             # Draw the lines between the tiles
             pygame.draw.aaline(scrn,
                                colors.BLACK,
