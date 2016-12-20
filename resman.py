@@ -105,7 +105,7 @@ class ResourceManager:
         # Adds the blank tile (represented by question mark `?')
         t = self.tilesMap.subsurface(
                 [0, 0, Tile_Size[0], Tile_Size[1]).copy()
-        self.tiles['?'] = t
+        self.tiles[' '] = t
 
     def init_fonts(self):
         '''

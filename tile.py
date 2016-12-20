@@ -9,9 +9,7 @@ class Tile:
         self.letter = letter.toupper()
         self.value = word_helpers.POINTS(letter)
 
-    def draw(self, scrn, x, y):
+    def draw(self, scrn, pos, rman):
         '''
-        Draws the tile at specific x and y coordinates on the screen
-        scrn.
         '''
-        pass
+        scrn.blit(rman.tiles[self.letter], pos)
