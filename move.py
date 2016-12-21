@@ -15,6 +15,31 @@ class Move:
     def __init__(self):
         self.m = []
 
+    def add_move(self, x, y, letter):
+        '''
+        Appends the entire thing onto move array. Checks for letters that are in
+        the same position.
+        '''
+        self.m.append((x, y, letter))
+
+        for i, j, l in self.m:
+            if i == x and j == y:
+                raise Exception("error: attempt to place letter in same position")
+
+    def remove_move(self, x, y):
+        '''
+        Returns the removed letter
+        '''
+        rem = None
+        for i, j, l in self.m:
+            if i == x and j == y:
+                # A match!
+                rem = (i, j, l)
+
+        self.m.remove(rem)
+
+        return rem[2]
+
     def validate(self):
         '''
         Checks to see if the move made by the player is valid.

@@ -1,5 +1,6 @@
 import tile
 import resman
+import move
 
 class Player:
     '''
@@ -12,6 +13,24 @@ class Player:
         '''
         self.score = 0
         self.hand = []
+        self.currentMove = move.Move()
+
+    def make_move(self, x, y, letter):
+        '''
+        Removes tile from hand and places it into active move (and ideally, the
+        board).
+        '''
+        if letter not in self.hand:
+            raise Exception("error: cannot move what is not yours")
+
+        self.currentMove.add_move(x, y, letter)
+
+    def takeback_move(self, x, y):
+        '''
+        Removes tile from active move (placed on board) and replace it back into
+        hand.
+        '''
+        self.hand.append(self.currentMove.remove_move(x, y))
 
     def deck_draw(self, deck, n):
         '''
