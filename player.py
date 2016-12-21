@@ -1,4 +1,5 @@
 import tile
+import resman
 
 class Player:
     '''
@@ -18,10 +19,24 @@ class Player:
         '''
         self.hand.extend(deck.take(n))
 
+    def deck_exchange(self, deck, l):
+        '''
+        Exchanges tiles in hand (list l) with random tiles in deck.
+        First checks to see that the list is a subset of hand.
+        '''
+        if not all(map(lambda i: i in self.hand, l)):
+            raise Exception("error: cannot exchange non-existant tiles")
+
+        deck.place(l)
+
+        for i in l:
+            self.hand.remove(i)
+
     def draw(self, scrn, pos, rman):
         '''
         Draws player's hand
         '''
         for i in range(len(self.hand)):
             scrn.blit(rman.tiles[self.hand[i]],
-                      (pos[0] + 50 * i, pos[1]))
+                      (pos[0] + resman.Tile_Size[0] * i,
+                       pos[1]))
