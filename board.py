@@ -9,6 +9,10 @@ class ScrabbleBoard:
     is valid or not.
     '''
     def __init__(self, pos, rman):
+        '''
+        Initializes positions, tiles, and bonuses. Tiles have tile items,
+        whereas bonuses have surfaces as items.
+        '''
         self.pos = pos
         self.tiles = [[None] * 15] * 15
         self.rman = rman
@@ -18,6 +22,7 @@ class ScrabbleBoard:
 
     def init_bonus(self, fn):
         '''
+        Initializes bonuses using the file.
         '''
         self.bonus = [[]]
         f = open(fn, 'r')
@@ -27,6 +32,29 @@ class ScrabbleBoard:
             self.bonus.append([])
 
         f.close()
+
+    def place(self, pos, letter):
+        '''
+        Converts letter to be placed into tile.Tile type.
+        '''
+        x, y = pos
+        if self.tiles[x][y] is not None:
+            raise Exception("error: tile exists")
+
+        self.tiles[x][y] = tile.Tile(letter)
+
+    def take_back(self, pos):
+        '''
+        Removes letter and returns it.
+        '''
+        x, y = pos
+        t = self.tiles[x][y]
+
+        if t is None:
+            raise Exception("error: tile doesn't exist")
+
+        self.tiles[x][y] = None
+        return t
 
     def handle(self, evt):
         '''

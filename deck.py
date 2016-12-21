@@ -1,6 +1,5 @@
-import tile
 import random
-import word_helpers
+import word_helpers as wh
 
 class Deck:
     '''
@@ -12,7 +11,7 @@ class Deck:
 
     def init_deck(self):
         self.d = []
-        for letter, freq in word_helpers.DISTRIBUTION.items():
+        for letter, freq in wh.DISTRIBUTION.items():
             # Blows up letter frequency into long repeated string, then converts
             # into list and uses said list to extend the dictionary. Repeat for
             # all the letters, and you get a nice repetitive deck

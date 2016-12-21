@@ -1,6 +1,8 @@
 import state
 import resman
 import board
+import player
+import deck
 
 class PlayState(state.State):
     '''
@@ -13,6 +15,14 @@ class PlayState(state.State):
         self.ai = ai
         self.rman = rman
         self.board = board.ScrabbleBoard((0, 0), self.rman)
+        self.p1 = player.Player()
+        self.p2 = player.Player()
+        self.deck = deck.Deck()
+        self.turn = "1"             # Player 1 always goes first
+
+        # First, draw 7 tiles
+        self.p1.deck_draw(self.deck, 7)
+        self.p2.deck_draw(self.deck, 7)
 
     def handle(self, evt):
         '''
@@ -25,6 +35,11 @@ class PlayState(state.State):
         Draws the state onto the screen scrn.
         '''
         self.board.draw(scrn)
+
+        if self.turn == "1":
+            self.p1.draw(scrn, (0, 750), self.rman)
+        else:
+            self.p2.draw(scrn, (0, 750), self.rman)
 
     def update(self, delta):
         '''

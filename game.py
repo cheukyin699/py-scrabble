@@ -19,7 +19,7 @@ class ScrabbleGame:
         epic comments, right?
         '''
         # Constants
-        SIZE = (750, 750)
+        SIZE = (800, 800)
 
         # Variables
         screen = pygame.display.set_mode(SIZE)
