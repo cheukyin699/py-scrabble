@@ -3,6 +3,7 @@ import resman
 import board
 import player
 import deck
+import pygame
 
 class PlayState(state.State):
     '''
@@ -19,6 +20,7 @@ class PlayState(state.State):
         self.p2 = player.Player()
         self.deck = deck.Deck()
         self.turn = "1"             # Player 1 always goes first
+        self.selectedTile = None    # Selected tile should be a letter only
 
         # First, draw 7 tiles
         self.p1.deck_draw(self.deck, 7)
@@ -28,7 +30,9 @@ class PlayState(state.State):
         '''
         Handles all events passed into the state.
         '''
-        pass
+        if self.selectedTile is not None:
+            # Tile is selected and should hang onto the mouse
+            pass
 
     def draw(self, scrn):
         '''
@@ -40,6 +44,13 @@ class PlayState(state.State):
             self.p1.draw(scrn, (0, 750), self.rman)
         else:
             self.p2.draw(scrn, (0, 750), self.rman)
+
+        if self.selectedTile is not None:
+            # Tile is selected and should hang onto the mouse
+            x, y = pygame.mouse.get_pos()
+            scrn.blit(self.rman.tiles[self.selectedTile],
+                      (x - resman.Tile_Size[0] / 2,
+                       y - resman.Tile_Size[1] / 2))
 
     def update(self, delta):
         '''
