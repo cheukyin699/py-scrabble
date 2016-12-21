@@ -1,6 +1,7 @@
 import pygame
 import colors
 import tile
+import resman
 
 class ScrabbleBoard:
     '''
@@ -16,9 +17,18 @@ class ScrabbleBoard:
         self.pos = pos
         self.tiles = [[None] * 15] * 15
         self.rman = rman
+        self.size = (15 * resman.Tile_Size[0],
+                     15 * resman.Tile_Size[1])
 
         # Initialize the bonus system
         self.init_bonus("res/board_data.txt")
+
+    def __contains__(self, pos):
+        '''
+        Returns true if point is inside Scrabble board, and false if otherwise.
+        Uses pygame Rect.collidepoint method to compact code.
+        '''
+        return pygame.Rect(self.pos, self.size).collidepoint(pos)
 
     def init_bonus(self, fn):
         '''

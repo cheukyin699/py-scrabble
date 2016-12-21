@@ -16,11 +16,14 @@ class PlayState(state.State):
         self.ai = ai
         self.rman = rman
         self.board = board.ScrabbleBoard((0, 0), self.rman)
-        self.p1 = player.Player()
-        self.p2 = player.Player()
+        self.p1 = player.Player((0, 750))
+        self.p2 = player.Player((0, 750))
         self.deck = deck.Deck()
         self.turn = "1"             # Player 1 always goes first
         self.selectedTile = None    # Selected tile should be a letter only
+
+        # Place players into dictionary for less if-statements
+        self.players = {"1": p1, "2": p2}
 
         # First, draw 7 tiles
         self.p1.deck_draw(self.deck, 7)
@@ -30,9 +33,48 @@ class PlayState(state.State):
         '''
         Handles all events passed into the state.
         '''
-        if self.selectedTile is not None:
-            # Tile is selected and should hang onto the mouse
-            pass
+        if evt.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            if pos in self.board:
+                if self.selectedTile is None:
+                    # Adds cursor onto board
+                    # Rotates cursor if needed
+                    # TODO
+                    pass
+                else:
+                    # Places selected tile into moveset, and thus, places tile
+                    # onto board
+                    # TODO
+                    pass
+            elif pos in self.players[self.turn]:
+                if self.selectedTile is None:
+                    # Select tile, and remove from correct hand
+                    self.handle_hand_select(pos)
+                else:
+                    # Replaces removed tile from hand
+                    self.handle_hand_replace()
+
+    def handle_hand_replace(self):
+        '''
+        Handles the replacing of selected tile into hand.
+        '''
+        # Places tile into hand
+        self.players[self.turn].hand.append(self.selectedTile)
+
+        # Removes selected tile
+        self.selectedTile = None
+
+    def handle_hand_select(self, pos):
+        '''
+        Handles the tile selection and removal (from the corresponding hand, of
+        course).
+        '''
+        # Grab tile from hand
+
+        # Place tile into tile selection
+
+        # Removes tile from hand
+        pass
 
     def draw(self, scrn):
         '''
@@ -41,9 +83,9 @@ class PlayState(state.State):
         self.board.draw(scrn)
 
         if self.turn == "1":
-            self.p1.draw(scrn, (0, 750), self.rman)
+            self.p1.draw(scrn, self.rman)
         else:
-            self.p2.draw(scrn, (0, 750), self.rman)
+            self.p2.draw(scrn, self.rman)
 
         if self.selectedTile is not None:
             # Tile is selected and should hang onto the mouse
