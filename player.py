@@ -1,6 +1,7 @@
 import tile
 import resman
 import move
+import pygame
 
 class Player:
     '''
@@ -17,6 +18,7 @@ class Player:
         self.currentMove = move.Move()
         self.size = (7 * resman.Tile_Size[0],
                      resman.Tile_Size[1])
+        self.rect = pygame.Rect(self.pos, self.size)
 
     def __contains__(self, pos):
         '''
@@ -24,7 +26,35 @@ class Player:
         otherwise.
         Uses pygame Rect.collidepoint method to compact code.
         '''
-        return pygame.Rect(self.pos, self.size).collidepoint(pos)
+        return self.rect.collidepoint(pos)
+
+    def get_tile_pos(self, pos):
+        '''
+        Returns the index of the tile, if it exists at position pos.
+        Otherwise, return -1. Assumes that the position is already in the player
+        hand.
+        '''
+        # Normalize the position
+        pos[0] -= self.pos[0]
+
+        ind = pos[0] // resman.Tile_Size[0]
+        if ind < len(self.hand):
+            return ind
+        else:
+            return -1
+
+    def get_tile(self, pos):
+        '''
+        Returns a single character from the position.
+        If the character doesn't exist, raises an exception.
+        '''
+        ind = self.get_tile_pos(pos)
+
+        if ind == -1:
+            raise Exception("error: that isn't a tile")
+
+        t = self.hand[ind]
+        return t
 
     def make_move(self, x, y, letter):
         '''

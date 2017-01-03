@@ -15,10 +15,11 @@ class ScrabbleBoard:
         whereas bonuses have surfaces as items.
         '''
         self.pos = pos
-        self.tiles = [[None] * 15] * 15
+        self.tiles = [[None for _ in range(15)] for __ in range(15)]
         self.rman = rman
         self.size = (15 * resman.Tile_Size[0],
                      15 * resman.Tile_Size[1])
+        self.rect = pygame.Rect(self.pos, self.size)
 
         # Initialize the bonus system
         self.init_bonus("res/board_data.txt")
@@ -28,7 +29,36 @@ class ScrabbleBoard:
         Returns true if point is inside Scrabble board, and false if otherwise.
         Uses pygame Rect.collidepoint method to compact code.
         '''
-        return pygame.Rect(self.pos, self.size).collidepoint(pos)
+        return self.rect.collidepoint(pos)
+
+    def get_tile_pos(self, pos):
+        '''
+        Returns the 2D indices for position pos. Since the board is of constant
+        size, it is assumed that position pos is already inside board. It will
+        always return a position, and won't error.
+        '''
+        # Normalize position
+        pos[0] -= self.pos[0]
+        pos[1] -= self.pos[1]
+
+        # Calculate integer division
+        return (pos[0] // resman.Tile_Size[0],
+                pos[1] // resman.Tile_Size[1])
+
+    def get_tile(self, pos):
+        '''
+        Returns the character on the tile. If it is empty, returns None.
+        '''
+        ind = self.get_tile_pos(pos)
+        return self.tiles[ind[0]][ind[1]]
+
+    def remove_tile(self, pos):
+        '''
+        Replaces the character at position pos on the board with None value.
+        If it is empty (None), it doesn't do a thing.
+        '''
+        ind = self.get_tile_pos(pos)
+        self.tiles[ind[0]][ind[1]] = None
 
     def init_bonus(self, fn):
         '''
@@ -79,23 +109,22 @@ class ScrabbleBoard:
         If tile is none, draw bonus
         if not, draw tiles (draw tile first, then bonus)
         '''
-        for y in range(len(self.tiles)):
+        for x in range(len(self.tiles)):
             # Draw the tiles (bonus or bust)
-            zipped = list(zip(self.tiles[y], self.bonus[y]))
-            for x in range(len(zipped)):
-                if zipped[x][0] is None:
-                    # Draw the bonus if necessary
-                    zipped[x][1].draw(scrn, (x * 50, y * 50), self.rman)
+            for y in range(len(self.tiles[x])):
+                if self.tiles[x][y] is None:
+                    # Draw the bonus if there is no tile
+                    self.bonus[x][y].draw(scrn, (x * 50, y * 50), self.rman)
                 else:
                     # Draw the tile otherwise
-                    zipped[x][0].draw(scrn, (x * 50, y * 50), self.rman)
-            # Draw the lines between the tiles
-            pygame.draw.aaline(scrn,
-                               colors.BLACK,
-                               (0, y * 50),
-                               (800, y * 50))
+                    scrn.blit(self.rman.tiles[self.tiles[x][y]], (x * 50, y * 50))
+
         # Draw the lines between the tiles
         for i in range(15):
+            pygame.draw.aaline(scrn,
+                               colors.BLACK,
+                               (0, i * 50),
+                               (800, i * 50))
             pygame.draw.aaline(scrn,
                                colors.BLACK,
                                (i * 50, 0),
