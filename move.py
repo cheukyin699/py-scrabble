@@ -20,11 +20,11 @@ class Move:
         Appends the entire thing onto move array. Checks for letters that are in
         the same position.
         '''
-        self.m.append((x, y, letter))
-
         for i, j, l in self.m:
             if i == x and j == y:
                 raise Exception("error: attempt to place letter in same position")
+
+        self.m.append((x, y, letter))
 
     def remove_move(self, x, y):
         '''
@@ -36,8 +36,10 @@ class Move:
                 # A match!
                 rem = (i, j, l)
 
-        self.m.remove(rem)
+        if rem is None:
+            raise Exception("error: letter doesn't exist and cannot be removed")
 
+        self.m.remove(rem)
         return rem[2]
 
     def validate(self):

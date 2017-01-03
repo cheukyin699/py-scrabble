@@ -102,12 +102,12 @@ class ScrabbleBoard:
         '''
         pass
 
-    def draw(self, scrn):
+    def draw(self, scrn, ms):
         '''
         Draws the scrabble board along with all the tiles.
-        Zip and check for Nones
         If tile is none, draw bonus
         if not, draw tiles (draw tile first, then bonus)
+        If there is an active moveset, draws it as well
         '''
         for x in range(len(self.tiles)):
             # Draw the tiles (bonus or bust)
@@ -118,6 +118,9 @@ class ScrabbleBoard:
                 else:
                     # Draw the tile otherwise
                     scrn.blit(self.rman.tiles[self.tiles[x][y]], (x * 50, y * 50))
+
+        for x, y, l in ms.m:
+            scrn.blit(self.rman.tiles[l], (x * 50, y * 50))
 
         # Draw the lines between the tiles
         for i in range(15):

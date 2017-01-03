@@ -37,10 +37,8 @@ class PlayState(state.State):
             pos = list(pygame.mouse.get_pos())
             if pos in self.board:
                 if self.selectedTile is None:
-                    # Adds cursor onto board
-                    # Rotates cursor if needed
-                    # TODO
-                    pass
+                    # Removes selected tile from board, and thus, from moveset
+                    self.handle_board_removal(pos)
                 else:
                     # Places selected tile into moveset, and thus, places tile
                     # onto board
@@ -53,16 +51,29 @@ class PlayState(state.State):
                     # Replaces removed tile from hand
                     self.handle_hand_replace(pos)
 
+    def handle_board_removal(self, pos):
+        '''
+        Handles the removal of tile. If the tile isn't in the current moveset,
+        don't remove anything. Because that is cheating. Cheating is not
+        tolerated.
+        '''
+        ind = self.board.get_tile_pos(pos)
+
+        try:
+            l = self.players[self.turn].currentMove.remove_move(*ind)
+            self.selectedTile = l
+        except:
+            return
+
     def handle_board_place(self, pos):
         '''
         Handles the placing of the selected tile onto the board. Assumes that
         there is already a selected tile.
         '''
         ind = self.board.get_tile_pos(pos)
-        print(ind)
         if self.board.tiles[ind[0]][ind[1]] is None:
-            # Sort of a value exchange, if you come to think about it
-            self.board.tiles[ind[0]][ind[1]] = self.selectedTile
+            self.players[self.turn].currentMove.add_move(ind[0], ind[1],
+                                                         self.selectedTile)
             self.selectedTile = None
 
     def handle_hand_replace(self, pos):
@@ -99,7 +110,7 @@ class PlayState(state.State):
         '''
         Draws the state onto the screen scrn.
         '''
-        self.board.draw(scrn)
+        self.board.draw(scrn, self.players[self.turn].currentMove)
 
         if self.turn == "1":
             self.p1.draw(scrn, self.rman)
