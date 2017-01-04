@@ -23,7 +23,7 @@ class PlayState(state.State):
         self.selectedTile = None    # Selected tile should be a letter only
 
         # Place players into dictionary for less if-statements
-        self.players = {"1": self.p1, "2": self.p2}
+        self.ps = {"1": self.p1, "2": self.p2}
 
         # First, draw 7 tiles
         self.p1.deck_draw(self.deck, 7)
@@ -43,7 +43,7 @@ class PlayState(state.State):
                     # Places selected tile into moveset, and thus, places tile
                     # onto board
                     self.handle_board_place(pos)
-            elif pos in self.players[self.turn]:
+            elif pos in self.ps[self.turn]:
                 if self.selectedTile is None:
                     # Select tile, and remove from correct hand
                     self.handle_hand_select(pos)
@@ -60,7 +60,7 @@ class PlayState(state.State):
         ind = self.board.get_tile_pos(pos)
 
         try:
-            l = self.players[self.turn].currentMove.remove_move(*ind)
+            l = self.ps[self.turn].currentMove.remove_move(*ind)
             self.selectedTile = l
         except:
             return
@@ -72,22 +72,28 @@ class PlayState(state.State):
         '''
         ind = self.board.get_tile_pos(pos)
         if self.board.tiles[ind[0]][ind[1]] is None:
-            self.players[self.turn].currentMove.add_move(ind[0], ind[1],
-                                                         self.selectedTile)
-            self.selectedTile = None
+            try:
+                # Stops people from trying to place tiles on a non-empty tile
+                # that is in moveset (it throws a nasty little error when it
+                # does).
+                self.ps[self.turn].currentMove.add_move(ind[0], ind[1],
+                                                        self.selectedTile)
+                self.selectedTile = None
+            except:
+                pass
 
     def handle_hand_replace(self, pos):
         '''
         Handles the replacing of selected tile into hand.
         '''
         # Gets the tile index, if any
-        ind = self.players[self.turn].get_tile_pos(pos)
+        ind = self.ps[self.turn].get_tile_pos(pos)
 
         # Places tile into hand
         if ind == -1:
-            self.players[self.turn].hand.append(self.selectedTile)
+            self.ps[self.turn].hand.append(self.selectedTile)
         else:
-            self.players[self.turn].hand.insert(ind, self.selectedTile)
+            self.ps[self.turn].hand.insert(ind, self.selectedTile)
 
         # Removes selected tile
         self.selectedTile = None
@@ -99,18 +105,18 @@ class PlayState(state.State):
         '''
         # Grab tile from hand and place into tile selection
         try:
-            self.selectedTile = self.players[self.turn].get_tile(pos)
+            self.selectedTile = self.ps[self.turn].get_tile(pos)
         except:
             return
 
         # Removes tile from hand
-        self.players[self.turn].hand.remove(self.selectedTile)
+        self.ps[self.turn].hand.remove(self.selectedTile)
 
     def draw(self, scrn):
         '''
         Draws the state onto the screen scrn.
         '''
-        self.board.draw(scrn, self.players[self.turn].currentMove)
+        self.board.draw(scrn, self.ps[self.turn].currentMove)
 
         if self.turn == "1":
             self.p1.draw(scrn, self.rman)
