@@ -6,6 +6,7 @@ import pygame
 class Player:
     '''
     A representation of the player, complete with current score and hand.
+    Should only draw the player's own hand, and not the current move.
     '''
     def __init__(self, pos):
         '''
