@@ -14,6 +14,14 @@ class Move:
     '''
     def __init__(self):
         self.m = []
+        # The type of move can be one of 3 characters:
+        # 'M' -> Your standard move (placing tiles on board)
+        # 'E' -> Exchange (the placed tiles on board get swapped with others in
+        #        the deck
+        # 'P' -> Pass (all placed tiles return to hand and the next turn
+        #        happens)
+        # Defaults to 'M'
+        self.t = 'M'
 
     def add_move(self, x, y, letter):
         '''
