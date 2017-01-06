@@ -43,7 +43,7 @@ class ScrabbleBoard:
             #  - placed tiles are adjacent to tiles (unless first move)
             #  - words that placed tiles make are valid with dictionary
             #  - if it is the first move, a tile must be on the center square
-            pass
+            return ms.validate() and True # TODO
         elif ms.t == "E":
             # It is an exchange
             # Exchanges are only valid if there are tiles placed on the board
