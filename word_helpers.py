@@ -1,3 +1,17 @@
+# Letter point value system
+# The spaces represent the blanks
+POINTS = {"A": 1, "C": 3, "B": 3, "E": 1, "D": 2, "G": 2,
+          "F": 4, "I": 1, "H": 4, "K": 5, "J": 8, "M": 3,
+          "L": 1, "O": 1, "N": 1, "Q": 10, "P": 3, "S": 1,
+          "R": 1, "U": 1, "T": 1, "W": 4, "V": 4, "Y": 4,
+          "X": 8, "Z": 10, " ": 0}
+# Letter distribution
+# The spaces represent the blanks
+DISTRIBUTION = {" ": 2, "E": 12, "A": 9, "I": 9, "O": 8, "N": 6, "R": 6, "T": 6,
+                "L": 4, "S": 4, "U": 4, "D": 4, "G": 3, "B": 2, "C": 2, "M": 2,
+                "P": 2, "F": 2, "H": 2, "V": 2, "W": 2, "Y": 2, "K": 1, "J": 1,
+                "X": 1, "Q": 1, "Z": 1}
+
 class WordDictionary:
     def __init__(self, fn):
         self.words = []
@@ -24,21 +38,6 @@ class WordDictionary:
             elif word < self.words[mid]:
                 last = mid
         return False
-
-# Letter point value system
-# The spaces represent the blanks
-POINTS = {"A": 1, "C": 3, "B": 3, "E": 1, "D": 2, "G": 2, 
-          "F": 4, "I": 1, "H": 4, "K": 5, "J": 8, "M": 3, 
-          "L": 1, "O": 1, "N": 1, "Q": 10, "P": 3, "S": 1, 
-          "R": 1, "U": 1, "T": 1, "W": 4, "V": 4, "Y": 4, 
-          "X": 8, "Z": 10, " ": 0}
-# Letter distribution
-# The spaces represent the blanks
-DISTRIBUTION = {" ": 2, "E": 12, "A": 9, "I": 9, "O": 8, "N": 6, "R": 6, "T": 6,
-                "L": 4, "S": 4, "U": 4, "D": 4, "G": 3, "B": 2, "C": 2, "M": 2,
-                "P": 2, "F": 2, "H": 2, "V": 2, "W": 2, "Y": 2, "K": 1, "J": 1,
-                "X": 1, "Q": 1, "Z": 1}
-
 
 def wordScore(word):
     word = word.upper()
