@@ -31,6 +31,31 @@ class ScrabbleBoard:
         '''
         return self.rect.collidepoint(pos)
 
+    def validate(self, ms):
+        '''
+        Returns true if the moveset on the board is valid, and false if
+        otherwise.
+        '''
+        if ms.t == "M":
+            # It is a move
+            # Moves are only valid if:
+            #  - placed tiles are in a line
+            #  - placed tiles are adjacent to tiles (unless first move)
+            #  - words that placed tiles make are valid with dictionary
+            #  - if it is the first move, a tile must be on the center square
+            pass
+        elif ms.t == "E":
+            # It is an exchange
+            # Exchanges are only valid if there are tiles placed on the board
+            return len(ms.m) > 0
+        elif ms.t == "P":
+            # It is a pass
+            # Passes are always valid
+            return True
+        else:
+            # Throw an error for nothing that we've ever seen before
+            raise Exception("error: invalid move type %s" % ms.t)
+
     def get_tile_pos(self, pos):
         '''
         Returns the 2D indices for position pos. Since the board is of constant
