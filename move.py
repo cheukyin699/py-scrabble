@@ -14,6 +14,7 @@ class Move:
     '''
     def __init__(self):
         self.m = []
+
         # The type of move can be one of 3 characters:
         # 'M' -> Your standard move (placing tiles on board)
         # 'E' -> Exchange (the placed tiles on board get swapped with others in
@@ -22,6 +23,20 @@ class Move:
         #        happens)
         # Defaults to 'M'
         self.t = 'M'
+
+        # If the move is chained together with other tiles on the board, it will
+        # be true, otherwise, if nothing is adjacent to it, it will be false.
+        self.is_chain = False
+
+    def get_item(self, x, y):
+        '''
+        Finds the move with coordinates equal to (x, y). Raises ValueError if
+        move doesn't exist.
+        '''
+        for i, j, l in self.m:
+            if i == x and j == y:
+                return (i, j, l)
+        raise ValueError('invalid indices (%d, %d)' % (x, y))
 
     def add_move(self, x, y, letter):
         '''

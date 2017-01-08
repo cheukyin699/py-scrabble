@@ -20,6 +20,7 @@ class ScrabbleBoard:
         self.size = (15 * resman.Tile_Size[0],
                      15 * resman.Tile_Size[1])
         self.rect = pygame.Rect(self.pos, self.size)
+        self.clean = True
 
         # Initialize the bonus system
         self.init_bonus("res/board_data.txt")
@@ -30,6 +31,130 @@ class ScrabbleBoard:
         Uses pygame Rect.collidepoint method to compact code.
         '''
         return self.rect.collidepoint(pos)
+
+    def _find_connected_words(self, m, ms):
+        '''
+        Finds all the words that are connected either horizontally or vertically
+        to the single letter in move m (in a moveset, of course).
+
+            (pos0, word, pos1)
+
+        Where:
+            pos0 - Starting point of the word
+            word - The word itself
+            pos1 - Ending point of the word
+
+        Returns a list (max size 2) of words in the above format.
+        '''
+        x, y, l = m
+        # Horizontal word
+        hw_0, hw_w, hw_1 = (x, y), "", (x, y)
+        # Go left
+        for i in xrange(x, -1, -1):
+            # First, try to get a tile
+            item = None
+            if self.tiles[i][y] is None:
+                try:
+                    item = ms.get_item(i, y)
+                except ValueError:
+                    # If there are no more tiles left, get out
+                    hw_0 = (i + 1, y)
+                    break
+            else:
+                ms.is_chain = True
+                item = self.tiles[i][y]
+
+            # Add letter to front of word
+            hw_w = item[2] + hw_w
+
+        # Go right
+        for i in xrange(x + 1, 15):
+            # First, try to get a tile
+            item = None
+            if self.tiles[i][y] is None:
+                try:
+                    item = ms.get_item(i, y)
+                except ValueError:
+                    hw_1 = (i - 1, y)
+                    break
+            else:
+                ms.is_chain = True
+                item = self.tiles[i][y]
+
+            hw_w += item[2]
+
+        # Vertical word
+        vw_0, vw_w, vw_1 = None, "", None
+        # Go up
+        for j in xrange(y, -1, -1):
+            # First, try to get a tile
+            item = None
+            if self.tiles[x][j] is None:
+                try:
+                    item = ms.get_item(x, j)
+                except ValueError:
+                    # If there are no more tiles left, get out
+                    vw_0 = (x, j + 1)
+                    break
+            else:
+                ms.is_chain = True
+                item = self.tiles[x][j]
+
+            # Add letter to front of word
+            vw_w = item[2] + vw_w
+
+        # Go right
+        for j in xrange(y + 1, 15):
+            # First, try to get a tile
+            item = None
+            if self.tiles[x][j] is None:
+                try:
+                    item = ms.get_item(x, j)
+                except ValueError:
+                    vw_1 = (x, j - 1)
+                    break
+            else:
+                ms.is_chain = True
+                item = self.tiles[x][j]
+
+            vw_w += item[2]
+
+        # Filter out all the single-letters, as they don't do anything (not
+        # connected to anything, and is just there by itself).
+        ret = []
+        if len(hw_w) > 1:
+            ret.append((hw_0, hw_w, hw_1))
+
+        if len(vw_w) > 1:
+            ret.append((vw_0, vw_w, vw_1))
+
+        return ret
+
+    def find_connected_words(self, ms):
+        '''
+        Finds all the words that are connected either horizontally or vertically
+        to any of the letters in the moveset. To ensure that duplicates are
+        eliminated, the list of words are returned as such:
+
+            (pos0, word, pos1)
+
+        Where:
+            pos0 - Starting point of the word
+            word - The word
+            pos1 - Ending point of the word
+        '''
+        words = []
+        for m in ms:
+            words.extend(self._find_connected_words(m, ms))
+
+        return list(set(words))
+
+    def validate_moveset(self, ms):
+        '''
+        Returns true if the moveset on the board contains valid scrabble words.
+        Returns false otherwise.
+        '''
+        words = self.find_connected_words(ms)
 
     def validate(self, ms):
         '''
@@ -43,7 +168,7 @@ class ScrabbleBoard:
             #  - placed tiles are adjacent to tiles (unless first move)
             #  - words that placed tiles make are valid with dictionary
             #  - if it is the first move, a tile must be on the center square
-            return ms.validate() and True # TODO
+            return ms.validate() and self.validate_moveset(ms)
         elif ms.t == "E":
             # It is an exchange
             # Exchanges are only valid if there are tiles placed on the board
