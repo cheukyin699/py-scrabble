@@ -50,7 +50,7 @@ class ScrabbleBoard:
         # Horizontal word
         hw_0, hw_w, hw_1 = (x, y), "", (x, y)
         # Go left
-        for i in xrange(x, -1, -1):
+        for i in range(x, -1, -1):
             # First, try to get a tile
             item = None
             if self.tiles[i][y] is None:
@@ -62,13 +62,13 @@ class ScrabbleBoard:
                     break
             else:
                 ms.is_chain = True
-                item = self.tiles[i][y]
+                item = (i, y, self.tiles[i][y])
 
             # Add letter to front of word
             hw_w = item[2] + hw_w
 
         # Go right
-        for i in xrange(x + 1, 15):
+        for i in range(x + 1, 15):
             # First, try to get a tile
             item = None
             if self.tiles[i][y] is None:
@@ -79,14 +79,14 @@ class ScrabbleBoard:
                     break
             else:
                 ms.is_chain = True
-                item = self.tiles[i][y]
+                item = (i, y, self.tiles[i][y])
 
             hw_w += item[2]
 
         # Vertical word
         vw_0, vw_w, vw_1 = None, "", None
         # Go up
-        for j in xrange(y, -1, -1):
+        for j in range(y, -1, -1):
             # First, try to get a tile
             item = None
             if self.tiles[x][j] is None:
@@ -98,13 +98,13 @@ class ScrabbleBoard:
                     break
             else:
                 ms.is_chain = True
-                item = self.tiles[x][j]
+                item = (x, j, self.tiles[x][j])
 
             # Add letter to front of word
             vw_w = item[2] + vw_w
 
         # Go right
-        for j in xrange(y + 1, 15):
+        for j in range(y + 1, 15):
             # First, try to get a tile
             item = None
             if self.tiles[x][j] is None:
@@ -115,7 +115,7 @@ class ScrabbleBoard:
                     break
             else:
                 ms.is_chain = True
-                item = self.tiles[x][j]
+                item = (x, j, self.tiles[x][j])
 
             vw_w += item[2]
 
@@ -144,7 +144,7 @@ class ScrabbleBoard:
             pos1 - Ending point of the word
         '''
         words = []
-        for m in ms:
+        for m in ms.m:
             words.extend(self._find_connected_words(m, ms))
 
         return list(set(words))
