@@ -4,6 +4,7 @@ import board
 import player
 import deck
 import pygame
+import word_helpers as wh
 
 class PlayState(state.State):
     '''
@@ -18,6 +19,7 @@ class PlayState(state.State):
         self.board = board.ScrabbleBoard((0, 0), self.rman)
         self.p1 = player.Player((0, 750))
         self.p2 = player.Player((0, 750))
+        self.wd = wh.WordDictionary('sowpods.txt')
         self.deck = deck.Deck()
         self.turn = "1"             # Player 1 always goes first
         self.selectedTile = None    # Selected tile should be a letter only

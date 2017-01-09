@@ -1,5 +1,3 @@
-from functools import reduce
-
 class Move:
     '''
     A move is an array of formatted tuples:
@@ -85,9 +83,11 @@ class Move:
         '''
         # Empty/single item in list should always return true
         if len(self.m) <= 1: return True
-        acc = reduce(lambda a, b: b if a is True else a[1] == b[1],
-                     self.m)
-        return bool(acc)
+        sety = self.m[0][1]
+        for x, y, l in self.m:
+            if y != sety:
+                return False
+        return True
 
     def validate_vertical(self):
         '''
@@ -98,6 +98,8 @@ class Move:
         '''
         # Empty/single item in list should always return true
         if len(self.m) <= 1: return True
-        acc = reduce(lambda a, b: b if a is True else a[0] == b[0],
-                     self.m)
-        return bool(acc)
+        setx = self.m[0][0]
+        for x, y, l in self.m:
+            if x != setx:
+                return False
+        return True

@@ -149,14 +149,15 @@ class ScrabbleBoard:
 
         return list(set(words))
 
-    def validate_moveset(self, ms):
+    def validate_moveset(self, ms, wd):
         '''
         Returns true if the moveset on the board contains valid scrabble words.
         Returns false otherwise.
         '''
-        words = self.find_connected_words(ms)
+        words = map(lambda item: item[1], self.find_connected_words(ms))
+        return all(map(wd.isValid, words))
 
-    def validate(self, ms):
+    def validate(self, ms, wd):
         '''
         Returns true if the moveset on the board is valid, and false if
         otherwise.
@@ -164,11 +165,14 @@ class ScrabbleBoard:
         if ms.t == "M":
             # It is a move
             # Moves are only valid if:
+            #  - there exists at least 1 placed tile
             #  - placed tiles are in a line
             #  - placed tiles are adjacent to tiles (unless first move)
             #  - words that placed tiles make are valid with dictionary
             #  - if it is the first move, a tile must be on the center square
-            return ms.validate() and self.validate_moveset(ms)
+            return len(ms.m) > 0 and\
+                   ms.validate() and\
+                   self.validate_moveset(ms, wd)
         elif ms.t == "E":
             # It is an exchange
             # Exchanges are only valid if there are tiles placed on the board
