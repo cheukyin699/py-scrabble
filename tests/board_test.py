@@ -37,29 +37,30 @@ class ScrabbleBoardTest(unittest.TestCase):
         b = ScrabbleBoard((0,0), None)
         validms = Move()
 
+        # A standard test with a standard word
         validms.m = [(7, 6, 'A'),
                      (7, 7, 'B'),
                      (7, 8, 'A')]
         validms_answer = [((7, 6), 'ABA', (7, 8))]
-        # A standard test with a standard word
         self.assertEqual(b.find_connected_words(validms),
                          validms_answer)
 
+        # A standard test with actual things on the board
         validms_answer = [((7, 6), 'ABA', (7, 8)),
                           ((7, 6), 'AA',  (8, 6)),
                           ((7, 7), 'BA',  (8, 7))]
         b.tiles[8][6] = 'A'
         b.tiles[8][7] = 'A'
-        # A standard test with actual things on the board
         self.assertSetEqual(set(b.find_connected_words(validms)),
                             set(validms_answer))
 
+        # A standard test checking overbite
         b.tiles[7][10] = 'A'
         b.tiles[5][6] = 'A'
-        # A standard test checking overbite
         self.assertSetEqual(set(b.find_connected_words(validms)),
                             set(validms_answer))
 
+        # A standard test for checking letters inserted between
         validms.m = [(6, 6, 'A'),
                      (8, 6, 'A')]
         validms_answer = [((6, 6), 'ABA', (8, 6))]
@@ -68,7 +69,6 @@ class ScrabbleBoardTest(unittest.TestCase):
         b.tiles[7][10] = None
         b.tiles[5][6] = None
         b.tiles[7][6] = 'B'
-        # A standard test for checking letters inserted between
         self.assertEqual(b.find_connected_words(validms),
                          validms_answer)
 
