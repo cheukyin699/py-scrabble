@@ -63,17 +63,18 @@ class ResourceManager:
         self.init_fonts()
 
         # Loads playable tiles
-        self.init_letter_tiles()
+        self.init_letter_tiles(ord('A'))
+        self.init_letter_tiles(ord('a'))
 
         # Loads tiles on the board
         self.init_board_tiles()
 
-    def init_letter_tiles(self):
+    def init_letter_tiles(self, starting):
         '''
         Loads all the playable tiles into memory.
         '''
         # Initialize tiles by creating them on the fly
-        for letter in range(ord('A'), ord('Z') + 1):
+        for letter in range(starting, starting + 26):
             # First tile, 50x50
             t = self.tilesMap.subsurface(
                     [0, 0,
@@ -91,6 +92,11 @@ class ResourceManager:
             # Render score on the letter
             num_s = self.fonts[Scrabble_Number_Font].render(
                                 str(wh.POINTS[chr(letter)]),
+                                True,
+                                colors.BLACK)
+            if starting == ord('a'):
+                num_s = self.fonts[Scrabble_Number_Font].render(
+                                '0',
                                 True,
                                 colors.BLACK)
             # Position score on the bottom right of the tile
