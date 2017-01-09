@@ -2,6 +2,7 @@ import pygame
 import colors
 import tile
 import resman
+import word_helpers as wh
 
 class ScrabbleBoard:
     '''
@@ -56,6 +57,7 @@ class ScrabbleBoard:
             if self.tiles[i][y] is None:
                 try:
                     item = ms.get_item(i, y)
+                    hw_0 = (i, y)       # In edge cases
                 except ValueError:
                     # If there are no more tiles left, get out
                     hw_0 = (i + 1, y)
@@ -63,6 +65,7 @@ class ScrabbleBoard:
             else:
                 ms.is_chain = True
                 item = (i, y, self.tiles[i][y])
+                hw_0 = (i, y)           # In edge cases
 
             # Add letter to front of word
             hw_w = item[2] + hw_w
@@ -74,12 +77,14 @@ class ScrabbleBoard:
             if self.tiles[i][y] is None:
                 try:
                     item = ms.get_item(i, y)
+                    hw_1 = (i, y)
                 except ValueError:
                     hw_1 = (i - 1, y)
                     break
             else:
                 ms.is_chain = True
                 item = (i, y, self.tiles[i][y])
+                hw_1 = (i, y)
 
             hw_w += item[2]
 
@@ -92,6 +97,7 @@ class ScrabbleBoard:
             if self.tiles[x][j] is None:
                 try:
                     item = ms.get_item(x, j)
+                    vw_0 = (x, j)
                 except ValueError:
                     # If there are no more tiles left, get out
                     vw_0 = (x, j + 1)
@@ -99,6 +105,7 @@ class ScrabbleBoard:
             else:
                 ms.is_chain = True
                 item = (x, j, self.tiles[x][j])
+                vw_0 = (x, j)
 
             # Add letter to front of word
             vw_w = item[2] + vw_w
@@ -110,12 +117,14 @@ class ScrabbleBoard:
             if self.tiles[x][j] is None:
                 try:
                     item = ms.get_item(x, j)
+                    vw_1 = (x, j)
                 except ValueError:
                     vw_1 = (x, j - 1)
                     break
             else:
                 ms.is_chain = True
                 item = (x, j, self.tiles[x][j])
+                vw_1 = (x, j)
 
             vw_w += item[2]
 
@@ -154,8 +163,93 @@ class ScrabbleBoard:
         Returns true if the moveset on the board contains valid scrabble words.
         Returns false otherwise.
         '''
+        # TODO consider caching
         words = map(lambda item: item[1], self.find_connected_words(ms))
         return all(map(wd.isValid, words))
+
+    def execute(self, ms):
+        assert(ms.t == 'M')
+
+        for x, y, l in ms.m:
+            if self.tiles[x][y] is None:
+                self.tiles[x][y] = l
+            else:
+                raise Exception('cannot place move - there is something here!')
+
+    def get_word_score(self, ms, word):
+        '''
+        Returns the score of a particular word on the board, given all the
+        bonuses gotten from moveset ms. Doesn't validate the moveset, though.
+        '''
+        word_bonus = 1
+        score = 0
+        if word[0][1] == word[2][1]:
+            # Horizontal word (y is same)
+            for x in range(word[0][0], word[2][0] + 1):
+                # Tries to obtain the letter in moveset and check that there is
+                # also a bonus tile of significant nature
+                try:
+                    i, j, l = ms.get_item(x, word[0][1])
+                    # This tile is going to be placed on the board, so check if
+                    # it exists in the bonus
+                    letter_bonus = 1
+                    if self.bonus[x][word[0][1]] in ['MD', 'DW']:
+                        # Double word
+                        word_bonus *= 2
+                    elif self.bonus[x][word[0][1]] == 'DL':
+                        # Double letter
+                        letter_bonus = 2
+                    elif self.bonus[x][word[0][1]] == 'TW':
+                        # Triple word
+                        word_bonus *= 3
+                    elif self.bonus[x][word[0][1]] == 'TL':
+                        # Triple letter
+                        letter_bonus *= 3
+
+                    score += wh.letterScore(word[1][x - word[0][0]]) * letter_bonus
+                except:
+                    # This tile is already on the board, so just count the score
+                    score += wh.letterScore(word[1][x - word[0][0]])
+        elif word[0][0] == word[2][0]:
+            # Vertical word (x is same)
+            for y in range(word[0][1], word[2][1] + 1):
+                try:
+                    i, j, l = ms.get_item(word[0][1], y)
+                    # This tile is going to be placed on the board, so check if
+                    # it exists in the bonus
+                    letter_bonus = 1
+                    if self.bonus[word[0][0]][y] in ['MD', 'DW']:
+                        # Double word
+                        word_bonus *= 2
+                    elif self.bonus[word[0][0]][y] == 'DL':
+                        # Double letter
+                        letter_bonus = 2
+                    elif self.bonus[word[0][0]][y] == 'TW':
+                        # Triple word
+                        word_bonus *= 3
+                    elif self.bonus[word[0][0]][y] == 'TL':
+                        # Triple letter
+                        letter_bonus *= 3
+
+                    score += wh.letterScore(word[1][y - word[0][1]]) * letter_bonus
+                except:
+                    # This tile is already on the board, so just count the score
+                    score += wh.letterScore(word[1][y - word[0][1]])
+        else:
+            raise Exception('invalid word: neither horizontal nor vertical')
+
+        if len(ms.m) == 7:
+            return score * word_bonus + wh.BINGO_BONUS
+        else:
+            return score * word_bonus
+
+    def get_score(self, ms):
+        '''
+        Returns the score of a particular moveset ms on the board, considering
+        all the different bonuses it gets. Doesn't validate the moveset, though.
+        '''
+        words = self.find_connected_words(ms)
+        return sum(map(lambda w: self.get_word_score(ms, w), words))
 
     def validate(self, ms, wd):
         '''
@@ -222,7 +316,7 @@ class ScrabbleBoard:
         f = open(fn, 'r')
         for line in f.readlines():
             for sym in line.rstrip().split():
-                self.bonus[-1].append(tile.Bonus(sym))
+                self.bonus[-1].append(sym)
             self.bonus.append([])
 
         f.close()
@@ -268,7 +362,7 @@ class ScrabbleBoard:
             for y in range(len(self.tiles[x])):
                 if self.tiles[x][y] is None:
                     # Draw the bonus if there is no tile
-                    self.bonus[x][y].draw(scrn, (x * 50, y * 50), self.rman)
+                    scrn.blit(self.rman.tiles[self.bonus[x][y]], (x * 50, y * 50))
                 else:
                     # Draw the tile otherwise
                     scrn.blit(self.rman.tiles[self.tiles[x][y]], (x * 50, y * 50))

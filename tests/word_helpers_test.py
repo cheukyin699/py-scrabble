@@ -11,7 +11,7 @@ class WordScoreTest(unittest.TestCase):
         self.assertEqual(wordScore('SQUEEZE'), 25)
 
         # Lowercase testing
-        self.assertEqual(wordScore('dab'), 6)
+        self.assertEqual(wordScore('dab'), 0)
 
 class WordDictionaryTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):

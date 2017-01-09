@@ -11,6 +11,43 @@ class ScrabbleBoardTest(unittest.TestCase):
         super().__init__(*args, **kwargs)
         self.wd = WordDictionary('sowpods.txt')
 
+    def testGetScore(self):
+        b = ScrabbleBoard((0,0), None)
+        ms = Move()
+
+        # Idiot testing
+        self.assertEqual(b.get_score(ms), 0)
+
+        '''
+        # Test first move in middle
+        ms.m = [(6, 7, 'B'),
+                (7, 7, 'A'),
+                (8, 7, 'T')]
+        self.assertEqual(b.get_score(ms), 10)
+        b.execute(ms)
+
+        # Test second move
+        ms.m = [(6, 8, 'Y'),
+                (7, 8, 'E'),
+                (8, 8, 'A')]
+        self.assertEqual(b.get_score(ms), 27)
+
+        # Test move with blanks
+        ms.m[1] = (7, 8, 'e')
+        self.assertEqual(b.get_score(ms), 25)
+        '''
+
+        # Test combo x9
+        ms.m = [(0, 0, 'Q'),
+                (1, 0, 'U'),
+                (3, 0, 'T'),
+                (4, 0, 'Z'),
+                (5, 0, 'A'),
+                (6, 0, 'L'),
+                (7, 0, 'S')]
+        b.tiles[2][0] = 'E'
+        self.assertEqual(b.get_score(ms), 293)
+
     def testValidate(self):
         b = ScrabbleBoard((0,0), None)
         ms, ex, ps = Move(), Move(), Move()

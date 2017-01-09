@@ -11,6 +11,9 @@ DISTRIBUTION = {" ": 2, "E": 12, "A": 9, "I": 9, "O": 8, "N": 6, "R": 6, "T": 6,
                 "L": 4, "S": 4, "U": 4, "D": 4, "G": 3, "B": 2, "C": 2, "M": 2,
                 "P": 2, "F": 2, "H": 2, "V": 2, "W": 2, "Y": 2, "K": 1, "J": 1,
                 "X": 1, "Q": 1, "Z": 1}
+# Bingo bonus
+# The bonus score you get when you get bingo (all 7 letters used)
+BINGO_BONUS = 50
 
 class WordDictionary:
     def __init__(self, fn):
@@ -39,6 +42,11 @@ class WordDictionary:
                 last = mid
         return False
 
+def letterScore(letter):
+    if letter.islower():
+        return 0
+    else:
+        return POINTS[letter]
+
 def wordScore(word):
-    word = word.upper()
-    return sum(map(lambda l: POINTS[l], word))
+    return sum(map(letterScore, word))
