@@ -90,15 +90,16 @@ class ResourceManager:
             letter_sy = (Tile_Size[1] - letter_s.get_height()) / 2
 
             # Render score on the letter
-            num_s = self.fonts[Scrabble_Number_Font].render(
-                                str(wh.POINTS[chr(letter)]),
-                                True,
-                                colors.BLACK)
             if starting == ord('a'):
                 num_s = self.fonts[Scrabble_Number_Font].render(
                                 '0',
                                 True,
                                 colors.BLACK)
+            else:
+                num_s = self.fonts[Scrabble_Number_Font].render(
+                                    str(wh.POINTS[chr(letter)]),
+                                    True,
+                                    colors.BLACK)
             # Position score on the bottom right of the tile
             # Adds 2px of padding on each side
             num_sx = Tile_Size[0] - num_s.get_width()  - 2
