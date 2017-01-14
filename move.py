@@ -74,32 +74,33 @@ class Move:
         '''
         return self.validate_vertical() or self.validate_horizontal()
 
+    def _validate_helper(self, i):
+        '''
+        Checks to see if the mvoe made by the player is in an i direction line.
+
+        Returns true if it is, and false otherwise.
+        '''
+        if len(self.m) <= 1: return True
+        s = self.m[0][i]
+        for m in self.m:
+            if m[i] != s:
+                return False
+        return True
+
     def validate_horizontal(self):
         '''
         Checks to see if the move made by the player is in a horizontal line (y
         coordinates the same).
-        
+
         Returns true if it is, and false otherwise.
         '''
-        # Empty/single item in list should always return true
-        if len(self.m) <= 1: return True
-        sety = self.m[0][1]
-        for x, y, l in self.m:
-            if y != sety:
-                return False
-        return True
+        return self._validate_helper(1)
 
     def validate_vertical(self):
         '''
         Checks to see if the move made by the player is in a vertical line (x
         coordinates the same).
-        
+
         Returns true if it is, and false otherwise.
         '''
-        # Empty/single item in list should always return true
-        if len(self.m) <= 1: return True
-        setx = self.m[0][0]
-        for x, y, l in self.m:
-            if x != setx:
-                return False
-        return True
+        return self._validate_helper(0)
