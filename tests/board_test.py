@@ -70,6 +70,11 @@ class ScrabbleBoardTest(unittest.TestCase):
                 (8, 7, 'T')]
         self.assertFalse(b.validate(ms, self.wd))
 
+        # Test invalid move with spaced-out moves
+        ms.m = [(6, 7, 'Z'),
+                (8, 7, 'A')]
+        self.assertFalse(b.validate(ms, self.wd))
+
     def testFindConnectedWords(self):
         b = ScrabbleBoard((0,0), None)
         validms = Move()
