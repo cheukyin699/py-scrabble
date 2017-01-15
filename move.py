@@ -26,6 +26,8 @@ class Move:
         # be true, otherwise, if nothing is adjacent to it, it will be false.
         self.is_chain = False
 
+        self.vert, self.horz = None, None
+
     def get_item(self, x, y):
         '''
         Finds the move with coordinates equal to (x, y). Raises ValueError if
@@ -63,7 +65,7 @@ class Move:
         self.m.remove(rem)
         return rem[2]
 
-    def validate(self):
+    def validate(self, tiles):
         '''
         Checks to see if the move made by the player is valid.
         Only checks tile placement (vertical or horizontal), and not the words
@@ -72,7 +74,61 @@ class Move:
         Returns true if the move is valid in said direction, and false
         otherwise.
         '''
-        return self.validate_vertical() or self.validate_horizontal()
+        print(self.validate_continuity(tiles))
+        return (self.validate_vertical() or self.validate_horizontal()) and\
+            self.validate_continuity(tiles)
+
+    def _validate_directional_continuity(self, tiles, i):
+        '''
+        Gets the endpoints of the moveset and checks to see if there is a path
+        spanning between tem, starting from an endpoint.
+
+        Note that i can only be either 1 or 0 - anything other than that, and
+        this function will work unexpectedly.
+
+        Returns true if there is a route between the 2 endpoints, and false
+        otherwise.
+        '''
+        akey = lambda m: m[i]
+        y = self.m[0][int(not bool(i))]
+        left, right = min(self.m, key = akey), max(self.m, key = akey)
+        print(left, right)
+
+        for x in range(left[i], right[i]):
+            a, b = x, y
+            if i == 1:
+                b, a = x, y
+            if tiles[a][b] is None:
+                try:
+                    self.get_item(a, b)
+                except:
+                    return False
+
+        return True
+
+
+    def validate_continuity(self, tiles):
+        '''
+        Checks for continuity errors (i.e. moves with gaps in between).
+
+        Takes the endpoints of the moveset (leftmost/rightmost or
+        uppermost/lowermost), and checks to see if there is a path spanning
+        between them, starting from 1 endpoint. If there is, the move is joint
+        and continuous. If there isn't, the move is disjoint and stupid.
+
+        Returns true if there is continuity, and false otherwise.
+        '''
+        # The default 1-move moveset should always be continuous
+        if len(self.m) == 1: return True
+
+        if self.horz:
+            return self._validate_directional_continuity(tiles, 0)
+        elif self.vert:
+            return self._validate_directional_continuity(tiles, 1)
+        else:
+            # This shouldn't happen unless it is called from the outside before
+            # everything initializes
+            return False
 
     def _validate_helper(self, i):
         '''
@@ -81,6 +137,7 @@ class Move:
         Returns true if it is, and false otherwise.
         '''
         if len(self.m) <= 1: return True
+
         s = self.m[0][i]
         for m in self.m:
             if m[i] != s:
@@ -94,7 +151,8 @@ class Move:
 
         Returns true if it is, and false otherwise.
         '''
-        return self._validate_helper(1)
+        self.horz = self._validate_helper(1)
+        return self.horz
 
     def validate_vertical(self):
         '''
@@ -103,4 +161,5 @@ class Move:
 
         Returns true if it is, and false otherwise.
         '''
-        return self._validate_helper(0)
+        self.vert = self._validate_helper(0)
+        return self.vert

@@ -265,7 +265,7 @@ class ScrabbleBoard:
             #  - words that placed tiles make are valid with dictionary
             #  - if it is the first move, a tile must be on the center square
             return len(ms.m) > 0 and\
-                   ms.validate() and\
+                   ms.validate(self.tiles) and\
                    self.validate_moveset(ms, wd)
         elif ms.t == "E":
             # It is an exchange
